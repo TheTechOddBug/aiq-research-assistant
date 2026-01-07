@@ -98,7 +98,7 @@ By default, the deployment of the instruct LLM attempts to automatically select 
 You can list available profiles by running the NIM container directly:
 ```bash
 USERID=$(id -u) docker run --rm --gpus all \
-  nvcr.io/nim/meta/llama-3.3-70b-instruct:1.13.1 \
+  nvcr.io/nim/meta/llama-3.3-70b-instruct:1.14.0 \
   list-model-profiles
 ```
 
