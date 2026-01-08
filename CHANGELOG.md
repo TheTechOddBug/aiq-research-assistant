@@ -1,5 +1,10 @@
 # Change Log
 
+Release v1.2.1
+- Upgraded llama-3.3-70b-instruct NIM from version 1.13.1 to 1.14.0
+- Aligned Helm values and referenced Docker image tags with the new nim-llm version
+- Adopted RAG 2.3.2
+
 Release v1.2.0
 - Added support for Helm deployments
 - Add support and documentation for evaluation
