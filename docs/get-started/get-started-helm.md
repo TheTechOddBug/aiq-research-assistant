@@ -63,7 +63,7 @@ kubectl create namespace aiq
 To deploy pre-built chart from NGC:
 
 ```bash
-helm install aiq-aira https://helm.ngc.nvidia.com/nvidia/blueprint/charts/aiq-aira-v1.2.0.tgz \
+helm install aiq-aira https://helm.ngc.nvidia.com/nvidia/blueprint/charts/aiq-aira-v1.2.1.tgz \
 --username='$oauthtoken'  \
 --password=$NGC_API_KEY \
 --set imagePullSecret.password=$NGC_API_KEY \
