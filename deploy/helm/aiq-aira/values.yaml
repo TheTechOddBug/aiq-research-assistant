@@ -59,10 +59,6 @@ nim-llm:
       nvidia.com/gpu: 2
     requests:
       nvidia.com/gpu: 2
-  # Configure NIM Model Profile for optimal performance
-  env:
-    - name: NIM_MODEL_PROFILE
-      value: ""  # Empty for automatic selection, or specify tensorrt_llm profile
   model:
     ngcAPIKey: ""
     name: "meta/llama-3.3-70b-instruct"
