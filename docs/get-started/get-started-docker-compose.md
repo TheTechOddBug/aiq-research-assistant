@@ -76,7 +76,7 @@ export MODEL_DIRECTORY=~/.cache/model-cache
 Before deploying the AI-Q Research Assistant, deploy RAG by following [these instructions](https://github.com/NVIDIA-AI-Blueprints/rag/blob/main/docs/deploy-docker-self-hosted.md).
 
 ```bash
-git clone https://github.com/NVIDIA-AI-Blueprints/rag.git
+git clone https://github.com/NVIDIA-AI-Blueprints/rag.git -b main
 ```
 
 Open the file `rag/deploy/compose/.env` and confirm that all of the values in the section `# ==== Endpoints for using cloud NIMs ===` are commented out. Then source this file:
