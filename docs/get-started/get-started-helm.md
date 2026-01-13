@@ -93,9 +93,17 @@ helm install aiq-aira aiq-aira/ \
 
 #### Instruct LLM profile selection
 
-By default, the deployment of the instruct LLM automatically selects the most suitable profile from the list of compatible profiles based on the detected hardware. If you encounter issues with the selected profile or prefer to use a different compatible profile, you can explicitly select the profile by setting `NIM_MODEL_PROFILE` environment variable in the `nim-llm` section of the [values.yaml](../../deploy/helm/aiq-aira/values.yaml). Here is an example for two H100 GPUs:
+By default, the deployment of the instruct LLM attempts to automatically select the most suitable profile from the list of compatible profiles based on the detected hardware. Because of a known issue, vllm-based profiles are selected, so we recommend that you manually select a tensorrt_llm profile before you start the nim-llm service. 
 
-```yaml
+You can list available profiles by running the NIM container directly:
+```bash
+USERID=$(id -u) docker run --rm --gpus all \
+  nvcr.io/nim/meta/llama-3.3-70b-instruct:1.14.0 \
+  list-model-profiles
+```
+
+Using the list of model profiles from the previous step, add the NIM_MODEL_PROFILE in the `nim-llm` section of the [values.yaml](../../deploy/helm/aiq-aira/values.yaml). It is ideal to select one of the tensorrt_llm profiles for best performance. Here is an example of selecting one of these profiles for two H100 GPUs:
+```
 nim-llm:
   enabled: true
   resources:
@@ -103,7 +111,7 @@ nim-llm:
       nvidia.com/gpu: 2
     requests:
       nvidia.com/gpu: 2
-  env:
+  env:  # Add this section
     - name: NIM_MODEL_PROFILE
       value: "tensorrt_llm-h100-fp8-tp2-pp1-throughput-2330:10de-0013e870ea929584ec13dad6948450024cdc6c2f03a865f1b050fb08b9f64312-2"
   model:
@@ -118,6 +126,35 @@ resources:
     nvidia.com/gpu: 4
   requests:
     nvidia.com/gpu: 4
+```
+
+##### Hardware-Specific Profiles
+
+The following tensorrt_llm profiles are optimized for different common GPU configurations:
+
+###### 2xH100 NVL
+```
+tensorrt_llm-h100_nvl-fp8-tp2-pp1-throughput-2321:10de-3035d73242fb579040fb3f341adc36a7073f780419e73dd97edb7ce35cb0f550-2
+```
+
+###### 2xH100 SXM
+```
+tensorrt_llm-h100-fp8-tp2-pp1-throughput-2330:10de-0013e870ea929584ec13dad6948450024cdc6c2f03a865f1b050fb08b9f64312-2
+```
+
+###### 4xA100
+```
+tensorrt_llm-a100-bf16-tp4-pp1-throughput-20b2:10de-f14e1bad1a0e78da150aeedfee7919ab3ef21def09825caffef460b93fdde9b7-4
+```
+
+###### 2xRTX PRO 6000
+```
+tensorrt_llm-rtx6000_blackwell_sv-fp8-tp2-pp1-throughput-2bb5:10de-77ab630b949b0a58ad580a22ea055bc392a30fbf57357d6398814e00775aab8c-2
+```
+
+###### 2xB200
+```
+tensorrt_llm-b200-bf16-tp2-pp1-throughput-2901:10de-6d1452af26f860b53df112c90f6b92f22a41156c09dafa2582c2c1194e56a673-2
 ```
 
 More information about model profile selection can be found [here](https://docs.nvidia.com/nim/large-language-models/latest/profiles.html#profile-selection) in the NVIDIA NIM for Large Language Models (LLMs) documentation.
