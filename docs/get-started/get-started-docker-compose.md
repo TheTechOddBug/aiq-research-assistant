@@ -165,7 +165,7 @@ Next deploy the instruct model. *This step can take up to 45 minutes*.
 
 #### Model profile selection
 
-By default, the deployment of the instruct LLM attempts to automatically select the most suitable profile from the list of compatible profiles based on the detected hardware. Because of a known issue, vllm-based profiles are selected, so we recommend that you manually select a tensorrt_llm profile before you start the nim-llm service. 
+By default, the deployment of the instruct LLM automatically selects the most suitable profile from the list of compatible profiles based on the detected hardware. If you encounter issues with the selected profile or prefer to use a different compatible profile, you can explicitly select the profile by setting the `NIM_MODEL_PROFILE` environment variable before deploying.
 
 You can list available profiles by running the NIM container directly:
 ```bash
@@ -178,6 +178,18 @@ Using the list of model profiles from the previous step, set the NIM_MODEL_PROFI
 
 ```bash
 export NIM_MODEL_PROFILE="tensorrt_llm-h100-fp8-tp2-pp1-throughput-2330:10de-0013e870ea929584ec13dad6948450024cdc6c2f03a865f1b050fb08b9f64312-2"
+```
+
+Then update `deploy/compose/docker-compose.yaml` to add the `NIM_MODEL_PROFILE` environment variable to the `aira-instruct-llm` service environment section:
+
+```yaml
+aira-instruct-llm:
+  container_name: aira-instruct-llm
+  image: nvcr.io/nim/meta/llama-3.3-70b-instruct:1.14.0
+  # ... other configuration ...
+  environment:
+    NGC_API_KEY: ${NGC_API_KEY}
+    NIM_MODEL_PROFILE: ${NIM_MODEL_PROFILE-""}  # Add this line
 ```
 
 #### Hardware-Specific Profiles
@@ -207,18 +219,6 @@ tensorrt_llm-rtx6000_blackwell_sv-fp8-tp2-pp1-throughput-2bb5:10de-77ab630b949b0
 ##### 2xB200
 ```
 tensorrt_llm-b200-bf16-tp2-pp1-throughput-2901:10de-6d1452af26f860b53df112c90f6b92f22a41156c09dafa2582c2c1194e56a673-2
-```
-
-Then update `deploy/compose/docker-compose.yaml` to add the `NIM_MODEL_PROFILE` environment variable to the `aira-instruct-llm` service environment section:
-
-```yaml
-aira-instruct-llm:
-  container_name: aira-instruct-llm
-  image: nvcr.io/nim/meta/llama-3.3-70b-instruct:1.14.0
-  # ... other configuration ...
-  environment:
-    NGC_API_KEY: ${NGC_API_KEY}
-    NIM_MODEL_PROFILE: ${NIM_MODEL_PROFILE-""}  # Add this line
 ```
 
 More information about model profile selection can be found [here](https://docs.nvidia.com/nim/large-language-models/latest/profiles.html#profile-selection) in the NVIDIA NIM for Large Language Models (LLMs) documentation.

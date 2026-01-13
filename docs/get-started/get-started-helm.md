@@ -93,7 +93,7 @@ helm install aiq-aira aiq-aira/ \
 
 #### Instruct LLM profile selection
 
-By default, the deployment of the instruct LLM attempts to automatically select the most suitable profile from the list of compatible profiles based on the detected hardware. Because of a known issue, vllm-based profiles are selected, so we recommend that you manually select a tensorrt_llm profile before you start the nim-llm service. 
+By default, the deployment of the instruct LLM automatically selects the most suitable profile from the list of compatible profiles based on the detected hardware. If you encounter issues with the selected profile or prefer to use a different compatible profile, you can explicitly select the profile by adding the `NIM_MODEL_PROFILE` environment variable to the `nim-llm` section in [values.yaml](../../deploy/helm/aiq-aira/values.yaml).
 
 You can list available profiles by running the NIM container directly:
 ```bash
