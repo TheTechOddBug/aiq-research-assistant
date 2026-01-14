@@ -93,7 +93,7 @@ helm install aiq-aira aiq-aira/ \
 
 #### Instruct LLM profile selection
 
-By default, the deployment of the instruct LLM attempts to automatically select the most suitable profile from the list of compatible profiles based on the detected hardware. Because of a known issue, vllm-based profiles are selected, so we recommend that you manually select a tensorrt_llm profile before you start the nim-llm service. 
+By default, the deployment of the instruct LLM automatically selects the most suitable profile from the list of compatible profiles based on the detected hardware. If you encounter issues with the selected profile or prefer to use a different compatible profile, you can explicitly select the profile by adding the `NIM_MODEL_PROFILE` environment variable to the `nim-llm` section in [values.yaml](../../deploy/helm/aiq-aira/values.yaml).
 
 You can list available profiles by running the NIM container directly:
 ```bash
@@ -102,11 +102,21 @@ USERID=$(id -u) docker run --rm --gpus all \
   list-model-profiles
 ```
 
-Using the list of model profiles from the previous step, set the NIM_MODEL_PROFILE in the `nim-llm` section of the [values.yaml](../../deploy/helm/aiq-aira/values.yaml). It is ideal to select one of the tensorrt_llm profiles for best performance. Here is an example of selecting one of these profiles for two H100 GPUs:
+Using the list of model profiles from the previous step, add the NIM_MODEL_PROFILE in the `nim-llm` section of the [values.yaml](../../deploy/helm/aiq-aira/values.yaml). It is ideal to select one of the tensorrt_llm profiles for best performance. Here is an example of selecting one of these profiles for two H100 GPUs:
 ```
-env:
- - name: NIM_MODEL_PROFILE
-   value: "tensorrt_llm-h100-fp8-tp2-pp1-throughput-2330:10de-0013e870ea929584ec13dad6948450024cdc6c2f03a865f1b050fb08b9f64312-2"
+nim-llm:
+  enabled: true
+  resources:
+    limits:
+      nvidia.com/gpu: 2
+    requests:
+      nvidia.com/gpu: 2
+  env:  # Add this section
+    - name: NIM_MODEL_PROFILE
+      value: "tensorrt_llm-h100-fp8-tp2-pp1-throughput-2330:10de-0013e870ea929584ec13dad6948450024cdc6c2f03a865f1b050fb08b9f64312-2"
+  model:
+    ngcAPIKey: ""
+    name: "meta/llama-3.3-70b-instruct"
 ```
 
 If using A100s, the `nim-llm` section will also have to be updated to allocate four GPUs instead of two:
